@@ -5,7 +5,7 @@ import time
 import multiprocessing as mp
 from matplotlib import pyplot as plt
 
-np.random.seed(745)
+#np.random.seed(276)
 
 def Demand(p1, p2):
     if p1 < p2:
@@ -27,6 +27,9 @@ def Qfunction(price, period, delta, alpha, theta):
     # Initialize prices and Q-tables
     price1 = int(np.random.choice(len(price))) # index i matrix kan ikke være en float
     price2 = 0
+
+    price1_list = []
+    price2_list = []
 
     state = 0
 
@@ -87,6 +90,9 @@ def Qfunction(price, period, delta, alpha, theta):
             state = price1
             #print("state:", state)
 
+            price1_list.append(price1)
+            #print("1", price1_list)
+
         else:
             #print("Firm 2\n")
             # Previous estimate
@@ -131,15 +137,50 @@ def Qfunction(price, period, delta, alpha, theta):
 
             state = price2
             #print("state:", state)
+
+            price2_list.append(price2)
+            #print("2", price2_list)
+
         # Update t, i and j
         t = t + 1
         i = j
         j = i
    
-    return Qtable_1, Qtable_2, price1, price2
+    return Qtable_1, Qtable_2, price1_list, price2_list
 
-    
-print(Qfunction(P, 100000, 0.95, 0.3, 0.00002763))
+def Simulations(sim, price, period, delta, alpha, theta):
+    Qtable1_list = []
+    Qtable2_list = []
+    price1_list = []
+    price2_list = []
+
+    for i in range(sim):
+        Qtable1, Qtable2, price1, price2 = Qfunction(price, period, delta, alpha, theta)
+        Qtable1_list.append(Qtable1)
+        Qtable2_list.append(Qtable2)
+        price1_list.append(price1)
+        price2_list.append(price2)
+
+    return price1_list, price2_list
+
+k, l, s, t = Qfunction(P, 50000, 0.95, 0.3, 0.000276272)    
+#print("len1:", len(s))
+#print("len2:", len(t))
+
+print(Simulations(2, P, 500000, 0.95, 0.3, 0.0000276306))
+Q1, Q2, p1, p2 = Qfunction(P, 500000, 0.95, 0.3, 0.0000276306)
+Time_1 = np.arange(0, 499998, 2)
+Time_2 = np.arange(1, 499999, 2)
+
+plt.plot(Time_1, p1, label = 'P1')
+plt.plot(Time_2, p2, label = 'P2')
+plt.xlabel("Time t")
+plt.ylabel("Price")
+plt.legend()
+plt.show()
+
+
+
 
         
 
