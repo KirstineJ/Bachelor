@@ -5,7 +5,7 @@ import time
 import multiprocessing as mp
 from matplotlib import pyplot as plt
 
-#np.random.seed(276)
+np.random.seed(222)
 
 def Demand(p1, p2):
     if p1 < p2:
@@ -171,9 +171,10 @@ print(Simulations(2, P, 500000, 0.95, 0.3, 0.0000276306))
 Q1, Q2, p1, p2 = Qfunction(P, 500000, 0.95, 0.3, 0.0000276306)
 Time_1 = np.arange(0, 499998, 2)
 Time_2 = np.arange(1, 499999, 2)
+Time_T = np.arange(500000)
 
-plt.plot(Time_1, p1, label = 'P1')
-plt.plot(Time_2, p2, label = 'P2')
+plt.plot(Time_1, p1, label = 'P1', linestyle='--')
+plt.plot(Time_2, p2, label = 'P2', linestyle='-')
 plt.xlabel("Time t")
 plt.ylabel("Price")
 plt.legend()
