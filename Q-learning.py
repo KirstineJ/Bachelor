@@ -172,18 +172,30 @@ Q1, Q2, p1, p2 = Qfunction(P, 500000, 0.95, 0.3, 0.0000276306)
 Time_1 = np.arange(0, 499998, 2)
 Time_2 = np.arange(1, 499999, 2)
 Time_T = np.arange(500000)
-
+"""
 plt.plot(Time_1, p1, label = 'P1', linestyle='--')
 plt.plot(Time_2, p2, label = 'P2', linestyle='-')
 plt.xlabel("Time t")
 plt.ylabel("Price")
 plt.legend()
 plt.show()
+"""
 
+"""
+for i in Time_T:
+    plt.plot(Time_1, p1, label = 'P1', linestyle='--')
+    plt.plot(Time_2, p2, label = 'P2', linestyle='-')
+plt.xlabel("Time t")
+plt.ylabel("Price")
+plt.legend()
+"""
 
+X = np.linspace(0, 2*np.pi, 400)
+Y = np.sin(X**2)
 
-
-        
+fig, ax = plt.subplots()
+ax.plot(X, Y)
+ax.set_title('A single plot')     
 
 
 
