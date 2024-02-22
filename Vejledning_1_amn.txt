@@ -1,0 +1,98 @@
+
+import numpy as np 
+
+def take_action(Qtable, epsilon, uniform, state: int, price_grid: np.ndarray) -> int: 
+    N = len(price_grid)
+    assert Qtable.shape[0] == N, "Qtable must have the same number of rows as there are prices in the grid"
+    assert Qtable.shape[1] == N, "Qtable must have the same number of columns as there are prices in the grid"
+    assert state < N, "state must be a valid index in the price grid"
+    assert state >= 0, "state must be a valid index in the price grid"
+
+    # draw 1's action 
+    if uniform < epsilon:
+        price = np.random.choice(N)
+    else:
+        price = np.argmax(Qtable[:, state])
+    return price
+
+def Qfunction(price, period, delta, alpha, theta):
+    # Initialize prices and Q-tables
+    price1 = int(np.random.choice(len(price))) # index i matrix kan ikke være en float [A: int() er overflødig]
+    price2 = 0 # why? 
+
+    price1_list = []
+    price2_list = []
+
+    price1_list.append(price[price1])
+    price1_list.append(price[price1])
+    price2_list.append(price[price2])
+    price2_list.append(price[price2])
+
+    state = 0 # why not initialize to a random choice? i.e. state = np.random.choice(len(price))
+
+    Qtable_1 = np.zeros((len(price), len(price)))
+    Qtable_2 = np.zeros((len(price), len(price)))
+
+    profit_1_list = [] # kan måske slettes senere
+    profit_2_list = [] # kan måske slettes senere
+
+    avg_profit_1 = 0
+    avg_profit_2 = 0
+
+    profit_1_list.append(avg_profit_1)
+    profit_1_list.append(avg_profit_1)
+    profit_2_list.append(avg_profit_2)
+    profit_2_list.append(avg_profit_2)
+
+
+    t = 3 # this gets overwritten immediately? 
+    i = 1 # what is this? Appears to not be used? 
+    j = 2 # and this? 
+
+    epsilons = (1-theta)**np.arange(period+1)
+    uniforms = np.random.uniform(0,1,(period+1, 2))
+
+    for t in range(t, period + 1):
+        epsilon = (1 - theta)**t
+
+        # figure out who's turn it is
+        if t % 2 == 0:
+            # player 2 is the responder
+            # set up pointers to the state and the Q table 
+            state = price1 # the most recent draw of player 1's price
+            Qtable = Q_table_2 
+            Qtable_opponent = Q_table_1
+        else:
+            # player 1 is the responder
+            state = price2
+            Qtable = Q_table_1
+            Qtable_opponent = Q_table_2
+
+        # draw 1's action 
+        # (actually, player i's action is already simulated by player j in the previous period)
+        price_i = take_action(Qtable, epsilon, uniforms[t,0], state=state, price_grid=price)
+
+        # current period 
+        decision = price[price_i]
+        state_i_responds_to = price[state]
+        profit_current_period = Profit(decision, state_i_responds_to)
+
+        # next period 
+        state_next_period = price_i # next_period's state is today's price
+        price_j = take_action(Qtable_opponent, epsilon, uniforms[t,1], state=state_next_period, price_grid=price)
+
+        price_opponent_next_period = price[price_j]
+        price_i_next_period = price[price_i] # unchanged price, it's not i's turn 
+        profit_next_period = Profit(price_i_next_period, price_opponent_next_period)
+
+        max_Q = np.max(Qtable_1[:, price_j])
+        continuation_value = max_Q 
+
+        new_Q = profit_current_period + delta * profit_next_period + delta**2 * continuation_value
+
+        # Update
+        prev_estimate = Qtable[price_i, price_j]
+        Qtable[price_i, price_j] = (1 - alpha) * prev_estimate + alpha * new_Q
+
+        # save price_j (price_i should already be saved!) 
+
